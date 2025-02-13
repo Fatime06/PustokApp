@@ -1,0 +1,138 @@
+﻿@model Book
+<div class="container">
+    <div class="row">
+        <form method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label asp-for="Name">Title </label>
+                <input asp-for="Name" class="form-control">
+                <span class="text-danger" asp-validation-for="Name"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description">Description</label>
+                <input asp-for="Description" class="form-control">
+                <span class="text-danger" asp-validation-for="Description"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SalePrice">Sale Price</label>
+                <input asp-for="SalePrice" class="form-control">
+                <span class="text-danger" asp-validation-for="SalePrice"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CostPrice">Cost Price</label>
+                <input asp-for="CostPrice" class="form-control">
+                <span class="text-danger" asp-validation-for="CostPrice"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="InStock">InStock</label>
+                <input asp-for="InStock" class="form-control">
+                <span class="text-danger" asp-validation-for="InStock"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="IsNew">IsNew</label>
+                <input asp-for="IsNew" class="form-control">
+                <span class="text-danger" asp-validation-for="IsNew"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="IsFeatured">IsFeatured</label>
+                <input asp-for="IsFeatured" class="form-control">
+                <span class="text-danger" asp-validation-for="IsFeatured"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Photos">Images</label>
+                <input asp-for="Photos" type="file" class="form-control" id="imageInput" multiple>
+                <div id="imagePreviewContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;"></div>
+                @foreach (var image in Model.BookImages)
+                {
+                    <div style="display: inline-block; position: relative;">
+                        <img src="~/assets/image/products/@image.Name" width="100" height="100" style="object-fit: cover; border: 1px solid #ddd; padding: 5px;">
+                        @if (image.Status!=true)
+                        {
+                            <a class="btn btn-danger btn-sm position-absolute" asp-action="DeleteBookImage" asp-route-id="@image.Id" style="top: 5px; right: 5px;">X</a>
+                            <a class="btn btn-primary btn-sm position-absolute" asp-action="SetMainImage" asp-route-id="@image.Id" style="bottom: 5px; right: 5px;">Main</a>
+                        }
+                    </div>
+                }
+                <span class="text-danger" asp-validation-for="Photos"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Rate">Rate</label>
+                <input asp-for="Rate" class="form-control">
+                <span class="text-danger" asp-validation-for="Rate"></span>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label asp-for="AuthorId">Author</label>
+                    <select asp-for="AuthorId" class="form-select">
+                        @foreach (var author in ViewBag.Authors)
+                        {
+                            <option value="@author.Id">@author.Name</option>
+                        }
+                    </select>
+                    <span class="text-danger" asp-validation-for="AuthorId"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TagIds">Tags</label>
+                    <select asp-for="TagIds" class="form-select">
+                        @foreach (var tag in ViewBag.Tags)
+                        {
+                            <option value="@tag.Id" selected="@(Model.BookTags.Any(bg => bg.TagId == tag.Id) ? "selected" : null)">@tag.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="GenreId">Genre</label>
+                    <select asp-for="GenreId" class="form-select">
+                        @foreach (var genre in ViewBag.Genres)
+                        {
+                            <option value="@genre.Id">@genre.Name</option>
+                        }
+                    </select>
+                    <span class="text-danger" asp-validation-for="GenreId"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+@section scripts {
+    @await Html.PartialAsync("_ValidationPartial")
+    <script>
+        $(document).ready(function () {
+            $("#imageInput").change(function (ev) {
+                let files = ev.target.files;
+                let previewContainer = $("#imagePreviewContainer");
+                previewContainer.empty();
+
+                if (files.length > 0) {
+                    Array.from(files).forEach(file => {
+                        let reader = new FileReader();
+                        reader.onload = function (e) {
+                            let img = $("<img>").attr("src", e.target.result).css({
+                                "width": "100px",
+                                "height": "100px",
+                                "object-fit": "cover",
+                                "border": "1px solid #ddd",
+                                "padding": "5px"
+                            });
+                            previewContainer.append(img);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,58 @@
+﻿@model List<Book>
+
+@foreach (var product in Model)
+{
+    <div class="single-slide">
+        <div class="product-card">
+            <div class="product-header">
+                <a href="#" class="author">
+                    @product.Author.Name
+                </a>
+                <h3>
+                    <a asp-controller="book" asp-action="detail" asp-route-id="@product.Id">
+                        @product.Name
+                    </a>
+                </h3>
+            </div>
+            <div class="product-card--body">
+                <div class="card-image">
+                    <img src="~/assets/image/products/@product.BookImages.FirstOrDefault(i=>i.Status==true)?.Name" alt="">
+                    <div class="hover-contents">
+                        <a asp-controller="book" asp-action="detail" asp-route-id="@product.Id" class="hover-image">
+                            <img src="~/assets/image/products/@product.BookImages.FirstOrDefault(i=>i.Status==false)?.Name" alt="">
+                        </a>
+                        <div class="hover-btns">
+                            <a href="cart.html" class="single-btn">
+                                <i class="fas fa-shopping-basket"></i>
+                            </a>
+                            <a href="wishlist.html" class="single-btn">
+                                <i class="fas fa-heart"></i>
+                            </a>
+                            <a href="compare.html" class="single-btn">
+                                <i class="fas fa-random"></i>
+                            </a>
+                            <a asp-controller="book" asp-action="modalelement" asp-route-id="@product.Id" class="single-btn book-modal">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="price-block">
+                    @if (product.DiscountPercentage > 0)
+                    {
+                        <span class="price">£@((product.CostPrice - ((product.CostPrice * product.DiscountPercentage) / 100)).ToString("0.00"))</span>
+                        <del class="price-old">£@product.CostPrice.ToString("0.00")</del>
+
+                        <span class="price-discount">@product.DiscountPercentage.ToString("0.##")%</span>
+
+                    }
+                    else
+                    {
+                        <span class="price">£@product.CostPrice.ToString("0.00")</span>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
